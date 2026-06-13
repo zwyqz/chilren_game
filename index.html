@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<title>🌈 宝宝英语乐园</title>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    font-family: -apple-system, "PingFang SC", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    overflow: hidden; touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none; -webkit-user-select: none;
+  }
+  body { background: #f0f4ff; }
+
+  /* ===== PAGE CONTAINERS ===== */
+  .page {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.4s ease;
+  }
+  .page.active { display: flex; }
+
+  /* ===== HOME PAGE ===== */
+  #page-home {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+  }
+  .home-title {
+    font-size: clamp(28px, 5vw, 48px); color: #fff; text-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    margin-bottom: clamp(20px, 4vh, 50px); text-align: center; letter-spacing: 2px;
+  }
+  .home-buttons {
+    display: flex; gap: clamp(20px, 5vw, 60px);
+    flex-wrap: wrap; justify-content: center; align-items: center;
+  }
+  .home-btn {
+    width: clamp(140px, 30vw, 280px); height: clamp(140px, 30vw, 280px);
+    border-radius: clamp(30px, 6vw, 60px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; border: none; color: #fff;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15), inset 0 2px 0 rgba(255,255,255,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent; position: relative;
+  }
+  .home-btn:active { transform: scale(0.92) !important; }
+  .home-btn .icon { font-size: clamp(56px, 10vw, 100px); line-height: 1.2; }
+  .home-btn .label {
+    font-size: clamp(14px, 2vw, 22px); margin-top: clamp(6px, 1vh, 14px);
+    opacity: 0.85; letter-spacing: 1px; font-weight: 600;
+  }
+  .btn-songs {
+    background: linear-gradient(145deg, #a18cd1, #fbc2eb);
+  }
+  .btn-songs:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(161,140,209,0.4); }
+  .btn-words {
+    background: linear-gradient(145deg, #43e97b, #38f9d7);
+  }
+  .btn-words:hover { transform: scale(1.05); box-shadow: 0 12px 40px rgba(67,233,123,0.4); }
+
+  /* ===== TOP BAR ===== */
+  .top-bar {
+    position: fixed; top: 0; left: 0; width: 100%;
+    padding: clamp(8px, 1.5vh, 18px) clamp(12px, 2vw, 24px);
+    display: flex; align-items: center; z-index: 100;
+    background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, transparent 100%);
+  }
+  .back-btn {
+    width: clamp(48px, 8vw, 70px); height: clamp(48px, 8vw, 70px);
+    border-radius: 50%; border: none; background: rgba(255,255,255,0.85);
+    font-size: clamp(24px, 4vw, 36px); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.15s ease;
+  }
+  .back-btn:active { transform: scale(0.88); }
+
+  /* ===== FLASHCARD PAGE ===== */
+  #page-flash {
+    background: linear-gradient(180deg, #e0f7fa 0%, #f1f8e9 50%, #fff9c4 100%);
+  }
+  .flash-container {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 100%; max-width: 700px; flex: 1; padding: 20px;
+    position: relative; overflow: hidden;
+  }
+  .flash-card {
+    width: 100%; max-width: 500px;
+    aspect-ratio: 1 / 1;
+    background: rgba(255,255,255,0.85);
+    border-radius: clamp(24px, 5vw, 48px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1), inset 0 2px 0 rgba(255,255,255,0.8);
+    position: relative; cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    touch-action: pan-y;
+  }
+  .flash-card:active { transform: scale(0.97); }
+  .flash-emoji {
+    font-size: clamp(100px, 25vw, 220px);
+    line-height: 1.2; margin-bottom: clamp(8px, 2vh, 20px);
+    transition: transform 0.3s ease;
+  }
+  .flash-emoji.pop { animation: popBounce 0.5s ease; }
+  @keyframes popBounce {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .flash-word {
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 800; color: #2d3436;
+    letter-spacing: 2px; text-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  }
+  .flash-word::first-letter { text-transform: uppercase; }
+  .flash-zh {
+    font-size: clamp(22px, 5vw, 42px);
+    font-weight: 600; color: #636e72;
+    margin-top: clamp(2px, 0.5vh, 8px);
+  }
+  .flash-tap-hint {
+    position: absolute; bottom: clamp(8px, 2vh, 20px);
+    font-size: clamp(12px, 1.8vw, 18px); color: #b2bec3;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+
+  /* Category dots */
+  .cat-bar {
+    display: flex; gap: clamp(10px, 2vw, 24px);
+    margin: clamp(12px, 2vh, 24px) 0;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .cat-dot {
+    width: clamp(48px, 8vw, 72px); height: clamp(48px, 8vw, 72px);
+    border-radius: 50%; border: 3px solid rgba(255,255,255,0.6);
+    font-size: clamp(22px, 4vw, 36px);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; background: rgba(255,255,255,0.5);
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .cat-dot.active {
+    border-color: #fff; transform: scale(1.12);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    background: rgba(255,255,255,0.85);
+  }
+  .cat-dot:active { transform: scale(0.88); }
+
+  /* Nav arrows */
+  .flash-nav {
+    display: flex; align-items: center; justify-content: center;
+    gap: clamp(24px, 6vw, 60px); width: 100%; max-width: 500px;
+  }
+  .nav-arrow {
+    width: clamp(50px, 8vw, 72px); height: clamp(50px, 8vw, 72px);
+    border-radius: 50%; border: none; background: rgba(255,255,255,0.8);
+    font-size: clamp(24px, 4vw, 38px); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: transform 0.15s ease;
+  }
+  .nav-arrow:active { transform: scale(0.85); }
+  .nav-arrow:disabled { opacity: 0.3; pointer-events: none; }
+
+  /* Auto-play toggle */
+  .auto-toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: clamp(14px, 2vw, 20px); color: #636e72;
+    cursor: pointer; margin-top: clamp(4px, 1vh, 12px);
+  }
+  .auto-toggle input[type="checkbox"] {
+    width: clamp(36px, 5vw, 50px); height: clamp(20px, 3vw, 28px);
+    appearance: none; -webkit-appearance: none;
+    background: #dfe6e9; border-radius: 14px; position: relative;
+    cursor: pointer; transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .auto-toggle input[type="checkbox"]::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: calc(50% - 4px); height: calc(100% - 4px);
+    background: #fff; border-radius: 50%; transition: transform 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .auto-toggle input[type="checkbox"]:checked {
+    background: #00b894;
+  }
+  .auto-toggle input[type="checkbox"]:checked::after {
+    transform: translateX(calc(100% + 0px));
+  }
+
+  /* ===== SONGS PAGE ===== */
+  #page-songs {
+    background: linear-gradient(180deg, #ffeaa7 0%, #fdcb6e 50%, #f39c12 100%);
+  }
+  .songs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(clamp(140px, 28vw, 260px), 1fr));
+    gap: clamp(12px, 2.5vw, 28px);
+    padding: clamp(12px, 2vw, 24px);
+    width: 100%; max-width: 900px; max-height: 65vh;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    flex: 1; align-content: center;
+  }
+  .song-item {
+    background: rgba(255,255,255,0.85);
+    border-radius: clamp(16px, 3vw, 28px);
+    padding: clamp(16px, 2.5vw, 28px);
+    display: flex; flex-direction: column; align-items: center; gap: clamp(6px, 1vh, 14px);
+    cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    aspect-ratio: 1 / 0.9;
+  }
+  .song-item:active { transform: scale(0.94); }
+  .song-item .emoji { font-size: clamp(48px, 10vw, 90px); }
+  .song-item .title {
+    font-size: clamp(14px, 2.2vw, 22px); font-weight: 600; color: #2d3436;
+    text-align: center; line-height: 1.3;
+  }
+
+  /* ===== SONG PLAYER OVERLAY ===== */
+  .song-player {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(180deg, #a18cd1, #fbc2eb, #f6d365);
+    display: none; flex-direction: column; align-items: center;
+    z-index: 200; padding: clamp(40px, 6vh, 80px) 20px clamp(20px, 3vh, 40px);
+  }
+  .song-player.active { display: flex; }
+  .song-player .top-row {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    max-width: 600px; margin-bottom: clamp(10px, 2vh, 24px);
+  }
+  .song-player .back-song {
+    width: clamp(44px, 7vw, 56px); height: clamp(44px, 7vw, 56px);
+    border-radius: 50%; border: none; background: rgba(255,255,255,0.6);
+    font-size: clamp(22px, 3.5vw, 30px); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .song-player .song-title {
+    font-size: clamp(20px, 3.5vw, 32px); font-weight: 700; color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .song-player .spacer { width: clamp(44px, 7vw, 56px); }
+
+  /* Bouncing emoji */
+  .song-emoji-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    width: 100%; max-width: 500px;
+  }
+  .song-emoji {
+    font-size: clamp(100px, 25vw, 200px);
+    animation: bounceEmoji 1.5s ease-in-out infinite;
+    text-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  }
+  @keyframes bounceEmoji {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+
+  /* Lyrics display */
+  .lyrics-box {
+    width: 100%; max-width: 600px; min-height: clamp(80px, 12vh, 140px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.25);
+    border-radius: clamp(16px, 3vw, 28px);
+    padding: clamp(16px, 3vh, 32px) clamp(12px, 3vw, 24px);
+    margin-bottom: clamp(8px, 1.5vh, 20px);
+    backdrop-filter: blur(4px);
+  }
+  .lyrics-line {
+    font-size: clamp(28px, 5.5vw, 48px); font-weight: 700;
+    color: #fff; text-align: center; line-height: 1.4;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: opacity 0.3s ease;
+  }
+  .lyrics-line.sub {
+    font-size: clamp(20px, 4vw, 32px); opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  /* Progress dots */
+  .lyrics-progress {
+    display: flex; gap: clamp(6px, 1.2vw, 14px); margin-bottom: clamp(12px, 2vh, 24px);
+    flex-wrap: wrap; justify-content: center;
+  }
+  .lyric-dot {
+    width: clamp(10px, 1.8vw, 16px); height: clamp(10px, 1.8vw, 16px);
+    border-radius: 50%; background: rgba(255,255,255,0.35);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .lyric-dot.active {
+    background: #fff; transform: scale(1.4);
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  }
+
+  /* Song controls */
+  .song-controls {
+    display: flex; align-items: center; justify-content: center;
+    gap: clamp(20px, 5vw, 50px);
+  }
+  .song-ctrl-btn {
+    width: clamp(56px, 9vw, 76px); height: clamp(56px, 9vw, 76px);
+    border-radius: 50%; border: none; cursor: pointer;
+    font-size: clamp(28px, 4.5vw, 40px);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.85);
+    transition: transform 0.15s;
+  }
+  .song-ctrl-btn:active { transform: scale(0.85); }
+  .song-ctrl-btn.play-btn {
+    width: clamp(64px, 10vw, 88px); height: clamp(64px, 10vw, 88px);
+    font-size: clamp(32px, 5vw, 44px);
+    background: #fff;
+  }
+
+  /* ===== CELEBRATION ===== */
+  .celebration {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 50;
+  }
+  .confetti {
+    position: absolute; width: 10px; height: 10px; border-radius: 2px;
+    animation: confettiFall linear forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  .star-burst {
+    position: fixed; font-size: 60px; pointer-events: none; z-index: 60;
+    animation: starFly 1s ease-out forwards;
+  }
+  @keyframes starFly {
+    0% { transform: scale(0.5) translate(0, 0); opacity: 1; }
+    100% { transform: scale(1.8) translate(var(--dx), var(--dy)); opacity: 0; }
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (orientation: portrait) {
+    .flash-card { max-width: 85vw; }
+    .home-buttons { flex-direction: column; gap: 16px; }
+    .home-btn { width: clamp(120px, 40vw, 200px); height: clamp(120px, 40vw, 200px); }
+    .songs-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .flash-emoji { font-size: 80px; }
+    .flash-word { font-size: 28px; }
+    .flash-zh { font-size: 18px; }
+    .home-btn .icon { font-size: 48px; }
+  }
+  @media (min-width: 1024px) {
+    .flash-card { max-width: 550px; }
+    .flash-emoji { font-size: 200px; }
+    .flash-word { font-size: 68px; }
+  }
+
+  /* ===== SCROLLBAR ===== */
+  .songs-grid::-webkit-scrollbar { width: 4px; }
+  .songs-grid::-webkit-scrollbar-track { background: transparent; }
+  .songs-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ========== HOME PAGE ========== -->
+<div id="page-home" class="page active">
+  <div class="home-title">🌈 宝宝英语乐园</div>
+  <div class="home-buttons">
+    <button class="home-btn btn-songs" id="goSongs" aria-label="听儿歌">
+      <span class="icon">🎵</span>
+      <span class="label">🎤 听儿歌</span>
+    </button>
+    <button class="home-btn btn-words" id="goFlash" aria-label="学单词">
+      <span class="icon">🖼️</span>
+      <span class="label">📖 学单词</span>
+    </button>
+  </div>
+  <!-- Sound test (hidden from kids, visible to parents) -->
+  <div style="margin-top:16px;text-align:center;opacity:0.5;font-size:12px;color:#fff;">
+    <button id="soundTest" style="background:rgba(255,255,255,0.3);border:2px solid rgba(255,255,255,0.5);border-radius:20px;padding:8px 20px;font-size:16px;color:#fff;cursor:pointer;">🔊 点我听声音测试</button>
+    <span id="soundStatus" style="margin-left:10px;font-size:14px;"></span>
+  </div>
+</div>
+
+<!-- ========== FLASHCARD PAGE ========== -->
+<div id="page-flash" class="page">
+  <div class="top-bar">
+    <button class="back-btn" id="flashBack" aria-label="返回">←</button>
+  </div>
+  <div class="flash-container" id="flashContainer">
+    <div class="flash-card" id="flashCard">
+      <div class="flash-emoji" id="flashEmoji">🐱</div>
+      <div class="flash-word" id="flashWord">cat</div>
+      <div class="flash-zh" id="flashZh">猫</div>
+      <div class="flash-tap-hint">👆 点我听发音</div>
+    </div>
+
+    <div class="cat-bar" id="catBar"></div>
+
+    <div class="flash-nav">
+      <button class="nav-arrow" id="prevWord" aria-label="上一个">◀</button>
+      <div style="font-size: clamp(18px,3vw,28px); color:#636e72; font-weight:600;" id="wordCounter">1 / 7</div>
+      <button class="nav-arrow" id="nextWord" aria-label="下一个">▶</button>
+    </div>
+
+    <label class="auto-toggle">
+      <input type="checkbox" id="autoPlayToggle" checked>
+      <span>🔄 自动播放</span>
+    </label>
+  </div>
+</div>
+
+<!-- ========== SONGS PAGE ========== -->
+<div id="page-songs" class="page">
+  <div class="top-bar">
+    <button class="back-btn" id="songsBack" aria-label="返回">←</button>
+  </div>
+  <div class="songs-grid" id="songsGrid"></div>
+</div>
+
+<!-- ========== SONG PLAYER OVERLAY ========== -->
+<div class="song-player" id="songPlayer">
+  <div class="top-row">
+    <button class="back-song" id="songBack" aria-label="返回">←</button>
+    <span class="song-title" id="playerSongTitle">Twinkle Twinkle</span>
+    <div class="spacer"></div>
+  </div>
+  <div class="song-emoji-wrap">
+    <div class="song-emoji" id="playerEmoji">⭐</div>
+  </div>
+  <div class="lyrics-box">
+    <div class="lyrics-line" id="lyricLineMain">Twinkle, twinkle, little star</div>
+    <div class="lyrics-line sub" id="lyricLineSub"></div>
+  </div>
+  <div class="lyrics-progress" id="lyricsProgress"></div>
+  <div class="song-controls">
+    <button class="song-ctrl-btn" id="songPrev" aria-label="上一句">◀</button>
+    <button class="song-ctrl-btn play-btn" id="songPlayPause" aria-label="播放/暂停">▶</button>
+    <button class="song-ctrl-btn" id="songNext" aria-label="下一句">▶▶</button>
+  </div>
+</div>
+
+<!-- ========== CELEBRATION CONTAINER ========== -->
+<div class="celebration" id="celebration"></div>
+
+<script>
+(function(){
+  'use strict';
+
+  // ===================== DATA =====================
+  const CATEGORIES = [
+    { id: 'animals', emoji: '🐾', label: '动物' },
+    { id: 'food',    emoji: '🍎', label: '食物' },
+    { id: 'body',    emoji: '🖐️', label: '身体' },
+    { id: 'things',  emoji: '⭐', label: '物品' },
+    { id: 'colors',  emoji: '🎨', label: '颜色' },
+    { id: 'numbers', emoji: '🔢', label: '数字' },
+  ];
+
+  const WORDS = {
+    animals: [
+      { emoji: '🐱', word: 'cat', zh: '猫' },
+      { emoji: '🐶', word: 'dog', zh: '狗' },
+      { emoji: '🦆', word: 'duck', zh: '鸭子' },
+      { emoji: '🐄', word: 'cow', zh: '奶牛' },
+      { emoji: '🐷', word: 'pig', zh: '猪' },
+      { emoji: '🐦', word: 'bird', zh: '鸟' },
+      { emoji: '🐟', word: 'fish', zh: '鱼' },
+      { emoji: '🐰', word: 'rabbit', zh: '兔子' },
+      { emoji: '🐻', word: 'bear', zh: '熊' },
+      { emoji: '🐘', word: 'elephant', zh: '大象' },
+      { emoji: '🐵', word: 'monkey', zh: '猴子' },
+      { emoji: '🦁', word: 'lion', zh: '狮子' },
+      { emoji: '🐸', word: 'frog', zh: '青蛙' },
+      { emoji: '🐴', word: 'horse', zh: '马' },
+      { emoji: '🐭', word: 'mouse', zh: '老鼠' },
+      { emoji: '🐑', word: 'sheep', zh: '羊' },
+      { emoji: '🐯', word: 'tiger', zh: '老虎' },
+      { emoji: '🐢', word: 'turtle', zh: '乌龟' },
+      { emoji: '🐼', word: 'panda', zh: '熊猫' },
+      { emoji: '🐔', word: 'chicken', zh: '鸡' },
+    ],
+    food: [
+      { emoji: '🍎', word: 'apple', zh: '苹果' },
+      { emoji: '🥛', word: 'milk', zh: '牛奶' },
+      { emoji: '🥚', word: 'egg', zh: '鸡蛋' },
+      { emoji: '🍞', word: 'bread', zh: '面包' },
+      { emoji: '🍌', word: 'banana', zh: '香蕉' },
+      { emoji: '🍪', word: 'cookie', zh: '饼干' },
+      { emoji: '🧀', word: 'cheese', zh: '奶酪' },
+      { emoji: '🍰', word: 'cake', zh: '蛋糕' },
+      { emoji: '🍊', word: 'orange', zh: '橙子' },
+      { emoji: '🍇', word: 'grape', zh: '葡萄' },
+      { emoji: '🍚', word: 'rice', zh: '米饭' },
+      { emoji: '💧', word: 'water', zh: '水' },
+      { emoji: '🍬', word: 'candy', zh: '糖果' },
+      { emoji: '🍦', word: 'ice cream', zh: '冰淇淋' },
+      { emoji: '🍕', word: 'pizza', zh: '披萨' },
+      { emoji: '🥣', word: 'soup', zh: '汤' },
+      { emoji: '🧃', word: 'juice', zh: '果汁' },
+      { emoji: '🍜', word: 'noodles', zh: '面条' },
+    ],
+    body: [
+      { emoji: '👁️', word: 'eye', zh: '眼睛' },
+      { emoji: '👃', word: 'nose', zh: '鼻子' },
+      { emoji: '👄', word: 'mouth', zh: '嘴巴' },
+      { emoji: '👂', word: 'ear', zh: '耳朵' },
+      { emoji: '✋', word: 'hand', zh: '手' },
+      { emoji: '🧠', word: 'head', zh: '头' },
+      { emoji: '🦶', word: 'foot', zh: '脚' },
+      { emoji: '👶', word: 'baby', zh: '宝宝' },
+      { emoji: '💪', word: 'arm', zh: '胳膊' },
+      { emoji: '🦵', word: 'leg', zh: '腿' },
+      { emoji: '🦷', word: 'teeth', zh: '牙齿' },
+      { emoji: '💇', word: 'hair', zh: '头发' },
+      { emoji: '☝️', word: 'finger', zh: '手指' },
+      { emoji: '🦶', word: 'toes', zh: '脚趾' },
+    ],
+    things: [
+      { emoji: '⚽', word: 'ball', zh: '球' },
+      { emoji: '🚗', word: 'car', zh: '汽车' },
+      { emoji: '⭐', word: 'star', zh: '星星' },
+      { emoji: '☀️', word: 'sun', zh: '太阳' },
+      { emoji: '🌙', word: 'moon', zh: '月亮' },
+      { emoji: '🌳', word: 'tree', zh: '树' },
+      { emoji: '🌺', word: 'flower', zh: '花' },
+      { emoji: '📖', word: 'book', zh: '书' },
+      { emoji: '🪑', word: 'chair', zh: '椅子' },
+      { emoji: '🥤', word: 'cup', zh: '杯子' },
+      { emoji: '🪵', word: 'table', zh: '桌子' },
+      { emoji: '🕐', word: 'clock', zh: '钟' },
+      { emoji: '🚪', word: 'door', zh: '门' },
+      { emoji: '🎩', word: 'hat', zh: '帽子' },
+      { emoji: '👟', word: 'shoe', zh: '鞋子' },
+    ],
+    colors: [
+      { emoji: '🔴', word: 'red', zh: '红色' },
+      { emoji: '🔵', word: 'blue', zh: '蓝色' },
+      { emoji: '🟢', word: 'green', zh: '绿色' },
+      { emoji: '🟡', word: 'yellow', zh: '黄色' },
+      { emoji: '🩷', word: 'pink', zh: '粉色' },
+      { emoji: '🟣', word: 'purple', zh: '紫色' },
+      { emoji: '🟠', word: 'orange', zh: '橙色' },
+      { emoji: '⚪', word: 'white', zh: '白色' },
+      { emoji: '⚫', word: 'black', zh: '黑色' },
+    ],
+    numbers: [
+      { emoji: '1️⃣', word: 'one', zh: '一' },
+      { emoji: '2️⃣', word: 'two', zh: '二' },
+      { emoji: '3️⃣', word: 'three', zh: '三' },
+      { emoji: '4️⃣', word: 'four', zh: '四' },
+      { emoji: '5️⃣', word: 'five', zh: '五' },
+      { emoji: '6️⃣', word: 'six', zh: '六' },
+      { emoji: '7️⃣', word: 'seven', zh: '七' },
+      { emoji: '8️⃣', word: 'eight', zh: '八' },
+      { emoji: '9️⃣', word: 'nine', zh: '九' },
+      { emoji: '🔟', word: 'ten', zh: '十' },
+    ],
+  };
+
+  // YouTube video IDs for nursery rhymes
+  const SONGS = [
+    {
+      emoji: '⭐', title: 'Twinkle Twinkle',
+      lyrics: [
+        "Twinkle, twinkle, little star",
+        "How I wonder what you are",
+        "Up above the world so high",
+        "Like a diamond in the sky",
+        "Twinkle, twinkle, little star",
+        "How I wonder what you are",
+      ]
+    },
+    {
+      emoji: '🐄', title: 'Old MacDonald',
+      lyrics: [
+        "Old MacDonald had a farm",
+        "E-I-E-I-O",
+        "And on his farm he had a cow",
+        "E-I-E-I-O",
+        "With a moo-moo here, moo there",
+        "Here a moo, there a moo",
+        "Everywhere a moo-moo",
+      ]
+    },
+    {
+      emoji: '🚌', title: 'Wheels on the Bus',
+      lyrics: [
+        "The wheels on the bus go round and round",
+        "Round and round, round and round",
+        "The wheels on the bus go round and round",
+        "All through the town",
+      ]
+    },
+    {
+      emoji: '🔤', title: 'ABC Song',
+      lyrics: [
+        "A B C D E F G",
+        "H I J K L M N O P",
+        "Q R S, T U V",
+        "W X, Y and Z",
+        "Now I know my ABCs",
+        "Next time won't you sing with me",
+      ]
+    },
+    {
+      emoji: '🚣', title: 'Row Your Boat',
+      lyrics: [
+        "Row, row, row your boat",
+        "Gently down the stream",
+        "Merrily, merrily, merrily, merrily",
+        "Life is but a dream",
+      ]
+    },
+    {
+      emoji: '😊', title: 'Happy Song',
+      lyrics: [
+        "If you're happy and you know it",
+        "Clap your hands",
+        "If you're happy and you know it",
+        "Clap your hands",
+        "If you're happy and you know it",
+        "Then your face will surely show it",
+        "If you're happy and you know it",
+        "Clap your hands",
+      ]
+    },
+  ];
+
+  // ===================== STATE =====================
+  let currentCategory = 'animals';
+  let currentIndex = 0;
+  let autoPlayTimer = null;
+  let isAutoPlaying = true;
+  let isSpeaking = false;
+
+  // ===================== DOM REFS =====================
+  const pages = {
+    home:  document.getElementById('page-home'),
+    flash: document.getElementById('page-flash'),
+    songs: document.getElementById('page-songs'),
+  };
+  const flashEmoji   = document.getElementById('flashEmoji');
+  const flashWord    = document.getElementById('flashWord');
+  const flashZh      = document.getElementById('flashZh');
+  const wordCounter  = document.getElementById('wordCounter');
+  const catBar       = document.getElementById('catBar');
+  const flashCard    = document.getElementById('flashCard');
+  const prevBtn      = document.getElementById('prevWord');
+  const nextBtn      = document.getElementById('nextWord');
+  const autoToggle   = document.getElementById('autoPlayToggle');
+  const songsGrid       = document.getElementById('songsGrid');
+  const songPlayer      = document.getElementById('songPlayer');
+  const playerEmoji     = document.getElementById('playerEmoji');
+  const playerSongTitle = document.getElementById('playerSongTitle');
+  const lyricLineMain   = document.getElementById('lyricLineMain');
+  const lyricLineSub    = document.getElementById('lyricLineSub');
+  const lyricsProgress  = document.getElementById('lyricsProgress');
+  const songBack        = document.getElementById('songBack');
+  const songPlayPause   = document.getElementById('songPlayPause');
+  const songPrev        = document.getElementById('songPrev');
+  const songNext        = document.getElementById('songNext');
+  const celebration     = document.getElementById('celebration');
+
+  // ===================== NAVIGATION =====================
+  function showPage(name) {
+    Object.keys(pages).forEach(k => pages[k].classList.toggle('active', k === name));
+    if (name === 'flash') {
+      // Speak the current word — user just clicked, gesture chain is active
+      speakCurrentWord();
+      startAutoPlay();
+    } else {
+      stopAutoPlay();
+    }
+  }
+
+  document.getElementById('goSongs').addEventListener('click', () => showPage('songs'));
+  document.getElementById('goFlash').addEventListener('click', () => showPage('flash'));
+  document.getElementById('flashBack').addEventListener('click', () => showPage('home'));
+  document.getElementById('songsBack').addEventListener('click', () => showPage('home'));
+
+  // ===================== SPEECH =====================
+  // 一句话中英文连读：zh-CN 确保 Chrome 可播放
+  function speakWord(enText, zhText) {
+    if (!enText && !zhText) return;
+    speechSynthesis.cancel();
+    var combined = enText + '，' + zhText;
+    var u = new SpeechSynthesisUtterance(combined);
+    u.lang = 'zh-CN';
+    u.rate = 0.85;
+    u.pitch = 1;
+    u.volume = 1;
+    speechSynthesis.speak(u);
+  }
+
+  // ===================== FLASHCARD LOGIC =====================
+  function getWords() { return WORDS[currentCategory] || WORDS.animals; }
+
+  function showWord(index, animate = true) {
+    const words = getWords();
+    if (index < 0) index = 0;
+    if (index >= words.length) index = words.length - 1;
+    currentIndex = index;
+    const item = words[currentIndex];
+    flashEmoji.textContent = item.emoji;
+    flashWord.textContent = item.word;
+    flashZh.textContent = item.zh || '';
+    wordCounter.textContent = `${currentIndex + 1} / ${words.length}`;
+
+    if (animate) {
+      flashEmoji.classList.remove('pop');
+      void flashEmoji.offsetWidth;
+      flashEmoji.classList.add('pop');
+    }
+
+    updateNavButtons();
+  }
+
+  function speakCurrentWord() {
+    const words = getWords();
+    if (words[currentIndex]) {
+      speakWord(words[currentIndex].word, words[currentIndex].zh);
+      // Also pop animation
+      flashEmoji.classList.remove('pop');
+      void flashEmoji.offsetWidth;
+      flashEmoji.classList.add('pop');
+    }
+  }
+
+  function nextWord() {
+    const words = getWords();
+    if (currentIndex < words.length - 1) {
+      showWord(currentIndex + 1);
+    } else {
+      showWord(0);
+      celebrate();
+    }
+    speakCurrentWord();
+  }
+
+  function prevWord() {
+    if (currentIndex > 0) {
+      showWord(currentIndex - 1);
+      speakCurrentWord();
+    }
+  }
+
+  function updateNavButtons() {
+    const words = getWords();
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.disabled = false;
+  }
+
+  // ===================== CATEGORY BAR =====================
+  function buildCatBar() {
+    catBar.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const dot = document.createElement('div');
+      dot.className = 'cat-dot' + (cat.id === currentCategory ? ' active' : '');
+      dot.textContent = cat.emoji;
+      dot.title = cat.label;
+      dot.addEventListener('click', () => switchCategory(cat.id));
+      catBar.appendChild(dot);
+    });
+  }
+
+  function switchCategory(id) {
+    if (id === currentCategory) return;
+    currentCategory = id;
+    currentIndex = 0;
+    // Update dots
+    document.querySelectorAll('.cat-dot').forEach((dot, i) => {
+      dot.classList.toggle('active', CATEGORIES[i].id === id);
+    });
+    showWord(0);
+    speakCurrentWord();
+  }
+
+  // ===================== AUTO PLAY =====================
+  function startAutoPlay() {
+    stopAutoPlay();
+    if (!isAutoPlaying) return;
+    autoPlayTimer = setInterval(() => { nextWord(); }, 3500);
+  }
+
+  function stopAutoPlay() {
+    if (autoPlayTimer) {
+      clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+  }
+
+  autoToggle.addEventListener('change', () => {
+    isAutoPlaying = autoToggle.checked;
+    if (isAutoPlaying && pages.flash.classList.contains('active')) {
+      startAutoPlay();
+    } else {
+      stopAutoPlay();
+    }
+  });
+
+  // ===================== CARD CLICK (re-speak) =====================
+  flashCard.addEventListener('click', () => {
+    const words = getWords();
+    if (words[currentIndex]) {
+      speakWord(words[currentIndex].word, words[currentIndex].zh);
+      flashEmoji.classList.remove('pop');
+      void flashEmoji.offsetWidth;
+      flashEmoji.classList.add('pop');
+    }
+  });
+
+  // ===================== SWIPE SUPPORT =====================
+  let touchStartX = 0;
+  let touchStartY = 0;
+  const SWIPE_THRESHOLD = 40;
+
+  flashContainer.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  flashContainer.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    if (Math.abs(dx) > SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx > 0) { prevWord(); } else { nextWord(); }
+    }
+  }, { passive: true });
+
+  // Keyboard support for testing
+  document.addEventListener('keydown', (e) => {
+    if (!pages.flash.classList.contains('active')) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); nextWord(); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); prevWord(); }
+  });
+
+  // ===================== NAV BUTTONS =====================
+  prevBtn.addEventListener('click', prevWord);
+  nextBtn.addEventListener('click', nextWord);
+
+  // ===================== SONGS (OFFLINE LYRIC PLAYER) =====================
+  let currentSongIdx = 0;
+  let currentLyricIdx = 0;
+  let isSongPlaying = false;
+  let songSpeechTimer = null;
+  let songAutoTimer = null;
+
+  function buildSongs() {
+    songsGrid.innerHTML = '';
+    SONGS.forEach((song, i) => {
+      const item = document.createElement('div');
+      item.className = 'song-item';
+      item.innerHTML = `<div class="emoji">${song.emoji}</div>
+                        <div class="title">${song.title}</div>`;
+      item.addEventListener('click', () => openSongPlayer(i));
+      songsGrid.appendChild(item);
+    });
+  }
+
+  function openSongPlayer(idx) {
+    currentSongIdx = idx;
+    currentLyricIdx = 0;
+    stopSongPlayback();
+
+    const song = SONGS[idx];
+    playerEmoji.textContent = song.emoji;
+    playerSongTitle.textContent = song.title;
+
+    // Build progress dots
+    lyricsProgress.innerHTML = '';
+    song.lyrics.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'lyric-dot' + (i === 0 ? ' active' : '');
+      lyricsProgress.appendChild(dot);
+    });
+
+    showLyricLine(0);
+    songPlayer.classList.add('active');
+    isSongPlaying = true;
+    songPlayPause.textContent = '⏸';
+    scheduleNextLyric();
+  }
+
+  function closeSongPlayer() {
+    stopSongPlayback();
+    songPlayer.classList.remove('active');
+  }
+
+  function showLyricLine(idx) {
+    const song = SONGS[currentSongIdx];
+    if (!song) return;
+    currentLyricIdx = Math.max(0, Math.min(idx, song.lyrics.length - 1));
+    lyricLineMain.textContent = song.lyrics[currentLyricIdx] || '';
+    lyricLineSub.textContent = '';
+
+    // Update progress dots
+    document.querySelectorAll('.lyric-dot').forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentLyricIdx);
+    });
+  }
+
+  function speakLyricLine(text, callback) {
+    if (!text) { if (callback) callback(); return; }
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN';
+    u.rate = 0.75;
+    u.pitch = 1;
+    u.volume = 1;
+    u.onend = callback;
+    u.onerror = callback;
+    speechSynthesis.speak(u);
+  }
+
+  function scheduleNextLyric() {
+    stopSongTimers();
+    if (!isSongPlaying) return;
+
+    const song = SONGS[currentSongIdx];
+    if (!song) return;
+
+    // Speak current line
+    speakLyricLine(song.lyrics[currentLyricIdx], () => {
+      if (!isSongPlaying) return;
+      // After speech ends, auto advance after a short pause
+      songAutoTimer = setTimeout(() => {
+        if (!isSongPlaying) return;
+        if (currentLyricIdx < song.lyrics.length - 1) {
+          showLyricLine(currentLyricIdx + 1);
+          scheduleNextLyric();
+        } else {
+          // Song ended — stop
+          isSongPlaying = false;
+          songPlayPause.textContent = '▶';
+          // Show "done" celebration
+          lyricLineMain.textContent = '🎉 唱完啦！';
+          lyricLineSub.textContent = '';
+        }
+      }, 1200);
+    });
+  }
+
+  function stopSongTimers() {
+    if (songSpeechTimer) { clearTimeout(songSpeechTimer); songSpeechTimer = null; }
+    if (songAutoTimer) { clearTimeout(songAutoTimer); songAutoTimer = null; }
+  }
+
+  function stopSongPlayback() {
+    isSongPlaying = false;
+    stopSongTimers();
+    window.speechSynthesis.cancel();
+    songPlayPause.textContent = '▶';
+  }
+
+  function toggleSongPlayback() {
+    if (isSongPlaying) {
+      // Pause
+      isSongPlaying = false;
+      stopSongTimers();
+      window.speechSynthesis.cancel();
+      songPlayPause.textContent = '▶';
+    } else {
+      // Resume
+      isSongPlaying = true;
+      songPlayPause.textContent = '⏸';
+      scheduleNextLyric();
+    }
+  }
+
+  function prevLyric() {
+    if (currentLyricIdx > 0) {
+      stopSongTimers();
+      window.speechSynthesis.cancel();
+      showLyricLine(currentLyricIdx - 1);
+      if (isSongPlaying) scheduleNextLyric();
+    }
+  }
+
+  function nextLyric() {
+    const song = SONGS[currentSongIdx];
+    if (!song) return;
+    if (currentLyricIdx < song.lyrics.length - 1) {
+      stopSongTimers();
+      window.speechSynthesis.cancel();
+      showLyricLine(currentLyricIdx + 1);
+      if (isSongPlaying) scheduleNextLyric();
+    }
+  }
+
+  // Song player event listeners
+  songBack.addEventListener('click', closeSongPlayer);
+  songPlayPause.addEventListener('click', toggleSongPlayback);
+  songPrev.addEventListener('click', prevLyric);
+  songNext.addEventListener('click', nextLyric);
+
+  // ===================== CELEBRATION =====================
+  function celebrate() {
+    // Confetti
+    const colors = ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd','#00d2d3','#1dd1a1'];
+    const container = celebration;
+    container.innerHTML = '';
+    for (let i = 0; i < 40; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.top = '-10px';
+      confetti.style.width = (Math.random() * 8 + 4) + 'px';
+      confetti.style.height = (Math.random() * 8 + 4) + 'px';
+      confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      confetti.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+      confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+      container.appendChild(confetti);
+    }
+
+    // Star bursts
+    const emojis = ['⭐','🌟','✨','🎉','🎊','💫'];
+    for (let i = 0; i < 8; i++) {
+      const star = document.createElement('div');
+      star.className = 'star-burst';
+      star.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      star.style.left = (20 + Math.random() * 60) + '%';
+      star.style.top = (20 + Math.random() * 40) + '%';
+      const angle = Math.random() * 360;
+      const dist = 80 + Math.random() * 120;
+      star.style.setProperty('--dx', Math.cos(angle * Math.PI / 180) * dist + 'px');
+      star.style.setProperty('--dy', Math.sin(angle * Math.PI / 180) * dist + 'px');
+      star.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
+      container.appendChild(star);
+    }
+
+    // Clean up after animation
+    setTimeout(() => { container.innerHTML = ''; }, 3000);
+  }
+
+  // ===================== INIT =====================
+  function init() {
+    buildCatBar();
+    showWord(0);
+    buildSongs();
+    showPage('home');
+  }
+
+  // Handle visibility change — pause autoplay when hidden
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { stopAutoPlay(); }
+    else if (pages.flash.classList.contains('active') && isAutoPlaying) { startAutoPlay(); }
+  });
+
+  // ===================== SOUND TEST =====================
+  const soundTestBtn = document.getElementById('soundTest');
+  const soundStatus = document.getElementById('soundStatus');
+  if (soundTestBtn) {
+    soundTestBtn.addEventListener('click', function() {
+      if (!('speechSynthesis' in window)) {
+        soundStatus.textContent = '❌ 不支持 speechSynthesis';
+        return;
+      }
+      soundStatus.textContent = '🔊 播放中...';
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance('你好');
+      u.lang = 'zh-CN';
+      u.rate = 0.85;
+      u.pitch = 1;
+      u.volume = 1;
+      u.onend = () => { soundStatus.textContent = '✅ 成功！'; };
+      u.onerror = (e) => { soundStatus.textContent = '❌ 失败: ' + e.error; };
+      speechSynthesis.speak(u);
+    });
+  }
+
+  init();
+
+})();
+</script>
+</body>
+</html>
